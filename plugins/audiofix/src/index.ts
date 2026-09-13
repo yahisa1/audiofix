@@ -2,30 +2,25 @@ import { ReactNative as RN } from "@vendetta/metro/common";
 
 export const onLoad = () => {
     try {
-        // 디스코드 내부에 존재하는 오디오 관련 네이티브 모듈들을 전부 탐색
-        const modules = [
-            RN.NativeModules.AudioManager,
-            RN.NativeModules.RTNAudioManager,
-            RN.NativeModules.AudioModule,
-            RN.NativeModules.VoiceEngine
-        ];
+        // RN.NativeModules에 등록된 모든 모듈의 이름을 추출
+        const allModules = RN.NativeModules ? Object.keys(RN.NativeModules) : [];
+        
+        // 이름에 Audio, Voice, Media, Phone 등이 포함된 모듈 필터링
+        const audioRelated = allModules.filter(name => 
+            /audio|voice|media|phone|sound/i.test(name)
+        );
 
-        let resultText = "";
-        modules.forEach((mod, index) => {
-            if (mod) {
-                resultText += `[Module ${index}] Methods: ${Object.keys(mod).join(", ")}\n\n`;
-            }
-        });
+        console.log("All Native Modules:", allModules);
+        console.log("Audio Related Modules:", audioRelated);
 
-        if (resultText) {
-            console.log("Audio Debug:\n", resultText);
-            alert("발견된 오디오 모듈:\n" + resultText.substring(0, 300)); // 너무 길면 잘림
+        if (audioRelated.length > 0) {
+            alert("찾은 관련 모듈:\n" + audioRelated.join(", "));
         } else {
-            alert("오디오 관련 네이티브 모듈을 전혀 찾지 못했습니다.");
+            alert("관련 모듈 없음. 전체 모듈 개수: " + allModules.length);
         }
     } catch (e) {
         console.error("스캔 중 에러:", e);
-        alert("에러 발생: " + e.message);
+        alert("에러: " + e.message);
     }
 };
 
